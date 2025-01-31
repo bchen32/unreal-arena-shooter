@@ -60,6 +60,7 @@ void UTP_WeaponComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 			// Define collision query parameters
 			FCollisionQueryParams CollisionParams;
 			CollisionParams.AddIgnoredActor(Character); // Ignore the player character
+			CollisionParams.AddIgnoredActor(GetOwner()); // Ignore the rifle itself
 			CollisionParams.bTraceComplex = true;       // Use complex collision
 
 			// Fire Rate check
