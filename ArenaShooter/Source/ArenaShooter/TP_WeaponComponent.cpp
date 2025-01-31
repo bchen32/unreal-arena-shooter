@@ -86,11 +86,10 @@ void UTP_WeaponComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 						// Apply damage modifiers
 						float ResultantDamage = Damage;
 						if (UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent()))
-						{	
+						{
 							ResultantDamage = WeakSpot->ApplyDamageModifier(Damage);
 						}
-						if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("%s got hit with %f"), *HitActor->GetActorNameOrLabel(), ResultantDamage));
-						
+
 						// Damage the hit
 						UGameplayStatics::ApplyPointDamage(HitActor, ResultantDamage, HitResult.ImpactPoint, HitResult, Character->GetController(), this->GetOwner(), nullptr);
 					}
