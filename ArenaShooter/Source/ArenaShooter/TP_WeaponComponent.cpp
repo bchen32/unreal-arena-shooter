@@ -13,6 +13,7 @@
 #include "Animation/AnimInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/LocalPlayer.h"
+#include "Enemies/Accessories/WeakSpotComponent.h"
 #include "Engine/World.h"
 #include "Enemies/Enemy.h"
 
@@ -79,7 +80,13 @@ void UTP_WeaponComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 							// Bind the weapon’s function to the enemy’s delegate
 							Enemy->OnDeath.BindUObject(this, &UTP_WeaponComponent::OnEnemyKilled);
 						}
-						UGameplayStatics::ApplyPointDamage(HitActor, 1.0f, HitResult.ImpactPoint, HitResult, Character->GetController(), this->GetOwner(), nullptr);
+						float Damage = 1.0f;
+						if (UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent()))
+						{	
+							Damage = WeakSpot->ApplyDamageModifier(Damage);
+						}
+						if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("%s got hit with %f"), *HitActor->GetActorNameOrLabel(), Damage));
+						UGameplayStatics::ApplyPointDamage(HitActor, Damage, HitResult.ImpactPoint, HitResult, Character->GetController(), this->GetOwner(), nullptr);
 					}
 				}
 				TimeSinceLastShot = 0.0f;
