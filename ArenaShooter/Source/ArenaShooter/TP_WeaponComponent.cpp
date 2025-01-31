@@ -20,6 +20,7 @@
 // Sets default values for this component's properties
 UTP_WeaponComponent::UTP_WeaponComponent()
 {
+	Damage = 1.0f;
 	ScopeFOV = 60.0f;
 	ScopeMoveSpeed = 200.0f;
 	MaxAmmo = 80;
@@ -81,13 +82,17 @@ void UTP_WeaponComponent::TickComponent(float DeltaTime, enum ELevelTick TickTyp
 							// Bind the weapon’s function to the enemy’s delegate
 							Enemy->OnDeath.BindUObject(this, &UTP_WeaponComponent::OnEnemyKilled);
 						}
-						float Damage = 1.0f;
+
+						// Apply damage modifiers
+						float ResultantDamage = Damage;
 						if (UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent()))
 						{	
-							Damage = WeakSpot->ApplyDamageModifier(Damage);
+							ResultantDamage = WeakSpot->ApplyDamageModifier(Damage);
 						}
-						if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("%s got hit with %f"), *HitActor->GetActorNameOrLabel(), Damage));
-						UGameplayStatics::ApplyPointDamage(HitActor, Damage, HitResult.ImpactPoint, HitResult, Character->GetController(), this->GetOwner(), nullptr);
+						if (GEngine) GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString::Printf(TEXT("%s got hit with %f"), *HitActor->GetActorNameOrLabel(), ResultantDamage));
+						
+						// Damage the hit
+						UGameplayStatics::ApplyPointDamage(HitActor, ResultantDamage, HitResult.ImpactPoint, HitResult, Character->GetController(), this->GetOwner(), nullptr);
 					}
 				}
 				TimeSinceLastShot = 0.0f;

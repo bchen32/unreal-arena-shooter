@@ -71,6 +71,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void Reload();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
+	float Damage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay)
 	float ScopeFOV;
 
