@@ -15,6 +15,12 @@ class ARENASHOOTER_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 private:	
+	// Whoever shot the projectile.
+	AActor* Owner = nullptr;
+
+	FTimerHandle ExpirationTimerHandle = FTimerHandle();
+
+protected:
 	UPROPERTY(EditAnywhere)
 	USphereComponent* HitboxComponent = nullptr;
 
@@ -23,13 +29,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
-
-	// Whoever shot the projectile.
-	AActor* Owner = nullptr;
-
-	FTimerHandle ExpirationTimerHandle = FTimerHandle();
-
-protected:
 	UPROPERTY(EditAnywhere)
 	float Damage;
 	UPROPERTY(EditAnywhere)
