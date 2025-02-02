@@ -28,7 +28,7 @@ void AShooterEnemy::Attack()
 				{
 					FVector TargetDir = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 					FVector LateralDir = FVector(TargetDir.X, TargetDir.Y, 0.0f).GetSafeNormal() * MuzzleLateralOffset;
-					FTransform Transform = FTransform(FRotator(), GetActorLocation() + LateralDir + FVector(0.0f, 0.0f, MuzzleZOffset));
+					FTransform Transform = FTransform(TargetDir.Rotation(), GetActorLocation() + LateralDir + FVector(0.0f, 0.0f, MuzzleZOffset));
 
 					// Spawn the projectile at desired location
 					AProjectile* Projectile = World->SpawnActorDeferred<AProjectile>(ProjectileType, Transform);
