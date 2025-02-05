@@ -41,24 +41,28 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	UpgradeSystem = CreateDefaultSubobject<UUpgradeSystem>(TEXT("UpgradeSystem"));
+
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;
 	GetCharacterMovement()->AirControlBoostVelocityThreshold = 0.0f;
+	maxDashes = 1;
 	DashCooldown = 1.0f;
 	MaxHealth = CurrHealth = 10.0f;
-}
+}	
 
 void AArenaShooterCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
 	CurrHealth = MaxHealth;
-	bCanDash = true;
+	numDashes = maxDashes;
+	
 }
 
 void AArenaShooterCharacter::EnableDash()
 {
-	bCanDash = true;
+	numDashes = maxDashes;
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -111,7 +115,7 @@ float AArenaShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const&
 
 void AArenaShooterCharacter::Dash(const FInputActionValue& Value)
 {
-	if (Controller != nullptr && bCanDash) {
+	if (Controller != nullptr && numDashes > 0) {
 		if (GetCharacterMovement()->IsMovingOnGround())
 		{
 			if (DashSound != nullptr)
@@ -127,7 +131,7 @@ void AArenaShooterCharacter::Dash(const FInputActionValue& Value)
 				DashDir = DashDir.GetSafeNormal();
 				LaunchCharacter(DashDir * 5000.0f, false, true);
 			}
-			bCanDash = false;
+			numDashes--;
 			GetWorld()->GetTimerManager().SetTimer(DashTimerHandle, this, &AArenaShooterCharacter::EnableDash, DashCooldown, false);
 		}
 	}
