@@ -162,9 +162,7 @@ void ABaseWeapon::Disable()
 {
 	SetActorHiddenInGame(true);
 	GetWorld()->GetTimerManager().ClearTimer(PulloutTimerHandle);
-	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
 	bIsActive = false;
-	bIsReloading = false;
 	bIsShooting = false;
 	PrimaryActorTick.bCanEverTick = false;
 }
@@ -195,7 +193,10 @@ void ABaseWeapon::CompleteReload()
 {
 	CurrAmmo = MaxAmmo;
 	bIsReloading = false;
-	UpdateHUD();
+	if (bIsActive)
+	{
+		UpdateHUD();
+	}
 }
 
 void ABaseWeapon::PlayAnim(UAnimMontage* Anim)
