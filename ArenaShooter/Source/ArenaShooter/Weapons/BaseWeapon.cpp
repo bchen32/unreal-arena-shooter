@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+#include "Weapons/BaseWeapon.h"
 #include "ArenaShooterCharacter.h"
 #include "ArenaShooterPlayerController.h"
-#include "Weapons/BaseWeapon.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Enemies/Enemy.h"
 #include "Enemies/Accessories/WeakSpotComponent.h"
@@ -62,12 +62,10 @@ void ABaseWeapon::Tick(float DeltaTime)
 				FVector End = Start + (CameraRotation.Vector() * 10000.0f);
 
 				FCollisionQueryParams CollisionParams;
-				CollisionParams.AddIgnoredActor(OwningCharacter);
-				//CollisionParams.AddIgnoredActor(GetOwner()); // Ignore the rifle itself
-				CollisionParams.bTraceComplex = true;       // Use complex collision
+				CollisionParams.bTraceComplex = true;
 
 				FHitResult HitResult;
-				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel1, CollisionParams);
+				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel1, CollisionParams); // player attack channel
 				if (bHit)
 				{
 					AActor* HitActor = HitResult.GetActor();
