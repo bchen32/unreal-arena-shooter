@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "EquipmentComponent.generated.h"
 
+class AArenaShooterCharacter;
+class APlayerController;
 class ABaseWeapon;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEquipment, Log, All);
@@ -44,6 +46,10 @@ private:
 
 	TArray<ABaseWeapon*> Weapons;
 	int32 CurrWeaponIdx;
+
+	// Character
+	AArenaShooterCharacter* OwningCharacter;
+	APlayerController* OwningController;
 
 public:
 	UEquipmentComponent();

@@ -6,6 +6,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/PlayerController.h"
 #include "Weapons/BaseWeapon.h"
 
 DEFINE_LOG_CATEGORY(LogEquipment);
@@ -18,31 +19,16 @@ UEquipmentComponent::UEquipmentComponent()
 void UEquipmentComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	// Spawn guns
-	for (TSubclassOf<ABaseWeapon> WeaponClass : WeaponClasses)
-	{
-		if (UWorld* World = GetWorld())
-		{
-			ABaseWeapon* NewWeapon = World->SpawnActor<ABaseWeapon>(WeaponClass);
-			if (NewWeapon)
-			{
-				Weapons.Add(NewWeapon);
-			}
-		}
-	}
-	if (ValidWeapon(CurrWeaponIdx))
-	{
-		Weapons[CurrWeaponIdx]->Enable();
-		AttachCurrMesh();
-	}
-	// Bind input
+	// Bind input and get parent
 	if (AActor* OwningActor = GetOwner())
 	{
-		if (ACharacter* Character = Cast<ACharacter>(OwningActor))
+		OwningCharacter = Cast<AArenaShooterCharacter>(OwningActor);
+		if (OwningCharacter)
 		{
-			if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+			OwningController = Cast<APlayerController>(OwningCharacter->GetController());
+			if (OwningController)
 			{
-				if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+				if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(OwningCharacter->InputComponent))
 				{
 					EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &UEquipmentComponent::StartShoot);
 					EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &UEquipmentComponent::EndShoot);
@@ -56,7 +42,42 @@ void UEquipmentComponent::BeginPlay()
 					EnhancedInputComponent->BindAction(SelectAction2, ETriggerEvent::Started, this, &UEquipmentComponent::Switch2);
 				}
 			}
+			else
+			{
+				UE_LOG(LogEquipment, Error, TEXT("Failed to initialize EquipmentComponent, no controller"));
+			}
 		}
+		else
+		{
+			UE_LOG(LogEquipment, Error, TEXT("Failed to initialize EquipmentComponent, no character"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogEquipment, Error, TEXT("Failed to initialize EquipmentComponent, no owner"));
+	}
+	// Spawn guns
+	for (TSubclassOf<ABaseWeapon> WeaponClass : WeaponClasses)
+	{
+		if (UWorld* World = GetWorld())
+		{
+			ABaseWeapon* NewWeapon = World->SpawnActor<ABaseWeapon>(WeaponClass);
+			if (NewWeapon)
+			{
+				Weapons.Add(NewWeapon);
+				NewWeapon->SetArenaShooterOwner(OwningCharacter);
+			}
+		}
+	}
+	// Activate starting weapon
+	if (ValidWeapon(CurrWeaponIdx))
+	{
+		Weapons[CurrWeaponIdx]->Enable();
+		AttachCurrMesh();
+	}
+	else
+	{
+		UE_LOG(LogEquipment, Log, TEXT("No starting weapon equipped"));
 	}
 }
 
@@ -85,7 +106,7 @@ void UEquipmentComponent::StartReload()
 {
 	if (ValidWeapon(CurrWeaponIdx))
 	{
-		Weapons[CurrWeaponIdx]->StartReload();
+	Weapons[CurrWeaponIdx]->StartReload();
 	}
 }
 
@@ -119,44 +140,50 @@ void UEquipmentComponent::Switch2()
 
 void UEquipmentComponent::Switch(int32 idx)
 {
-	UE_LOG(LogEquipment, Log, TEXT("Switch: %d"), idx);
-	if (CurrWeaponIdx != idx && ValidWeapon(CurrWeaponIdx) && ValidWeapon(idx))
+	if (ValidWeapon(CurrWeaponIdx) && ValidWeapon(idx))
 	{
-		// Disable and detach prev weapon
-		Weapons[CurrWeaponIdx]->Disable();
-		if (USkeletalMeshComponent* OldGunMesh = Weapons[CurrWeaponIdx]->GetGunMesh())
+		if (CurrWeaponIdx != idx)
 		{
-			OldGunMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+			// Disable and detach prev weapon
+			Weapons[CurrWeaponIdx]->Disable();
+			if (USkeletalMeshComponent* OldGunMesh = Weapons[CurrWeaponIdx]->GetGunMesh())
+			{
+				OldGunMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+			}
+
+			CurrWeaponIdx = idx;
+
+			// Enable and attach new weapon
+			Weapons[CurrWeaponIdx]->Enable();
+			AttachCurrMesh();
 		}
-
-		CurrWeaponIdx = idx;
-
-		// Enable and attach new weapon
-		Weapons[CurrWeaponIdx]->Enable();
-		AttachCurrMesh();
+	}
+	else
+	{
+		UE_LOG(LogEquipment, Warning, TEXT("Cannot switch to: %d"), idx);
 	}
 }
 
 void UEquipmentComponent::AttachCurrMesh()
 {
-	if (AActor* OwningActor = GetOwner())
+	if (OwningCharacter)
 	{
-		if (AArenaShooterCharacter* ArenaCharacter = Cast<AArenaShooterCharacter>(OwningActor))
+		if (USkeletalMeshComponent* CharacterMesh = OwningCharacter->GetMesh1P())
 		{
-			if (USkeletalMeshComponent* CharacterMesh = ArenaCharacter->GetMesh1P())
+			if (USkeletalMeshComponent* NewGunMesh = Weapons[CurrWeaponIdx]->GetGunMesh())
 			{
-				if (USkeletalMeshComponent* NewGunMesh = Weapons[CurrWeaponIdx]->GetGunMesh())
-				{
-					FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-					NewGunMesh->AttachToComponent(CharacterMesh, AttachmentRules, FName(TEXT("GripPoint")));
-					UE_LOG(LogEquipment, Log, TEXT("Attach"));
-				}
+				FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
+				NewGunMesh->AttachToComponent(CharacterMesh, AttachmentRules, FName(TEXT("GripPoint")));
 			}
 		}
 	}
+	else
+	{
+		UE_LOG(LogEquipment, Warning, TEXT("No owning character to attach mesh"));
+	}
 }
 
-void UEquipmentComponent::OnKill()
+void UEquipmentComponent::OnKill() // hook this up once there's an enemy manager
 {
 
 }

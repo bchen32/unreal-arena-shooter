@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "BaseWeapon.generated.h"
 
+class AArenaShooterCharacter;
+class AArenaShooterPlayerController;
 class USkeletalMeshComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapons, Log, All);
@@ -23,6 +25,8 @@ private:
 	bool bIsActive;
 	FTimerHandle PulloutTimerHandle;
 	FTimerHandle ReloadTimerHandle;
+	AArenaShooterCharacter* OwningCharacter;
+	AArenaShooterPlayerController* OwningController;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh)
@@ -82,12 +86,20 @@ public:
 
 	virtual void Disable();
 
+	virtual void OnKill();
+
+	void SetArenaShooterOwner(AArenaShooterCharacter* Character);
+
 	USkeletalMeshComponent* GetGunMesh() const { return GunMesh; }
 
 protected:
 	virtual void CompletePullout();
 
 	virtual void CompleteReload();
+
+	virtual void PlayAnim(UAnimMontage* Anim);
+
+	virtual void UpdateHUD();
 
 	virtual void BeginPlay() override;
 

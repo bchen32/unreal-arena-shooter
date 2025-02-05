@@ -11,7 +11,7 @@ AEnemy::AEnemy()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-	MaxHealth = Health = 30.0f;
+	MaxHealth = Health = 40.0f;
 
 	BehaviorTree = nullptr;
 }
