@@ -25,7 +25,7 @@ UMelee::UMelee()
 	Damage = 5.0f;
 }
 
-void UMelee::Activate()
+void UMelee::Enable()
 {
 	SetGenerateOverlapEvents(true);
 }

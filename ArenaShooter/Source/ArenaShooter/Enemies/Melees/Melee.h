@@ -25,6 +25,6 @@ protected:
 public:
 	UMelee();
 
-	void Activate();
+	void Enable();
 	void Disable();
 };
