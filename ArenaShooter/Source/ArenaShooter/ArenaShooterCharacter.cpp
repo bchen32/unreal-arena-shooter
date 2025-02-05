@@ -1,20 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ArenaShooterCharacter.h"
-#include "ArenaShooterProjectile.h"
-#include "Animation/AnimInstance.h"
+#include "ArenaShooterGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
-#include "InputActionValue.h"
-#include "Engine/LocalPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "TP_WeaponComponent.h"
-#include "ArenaShooterGameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "ArenaShooterGameMode.h"
+#include "Weapons/EquipmentComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -38,8 +32,10 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+
+	// Create equipment component
+	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("Equipment"));
 
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;

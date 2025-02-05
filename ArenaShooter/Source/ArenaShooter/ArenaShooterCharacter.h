@@ -11,6 +11,7 @@
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
+class UEquipmentComponent;
 class UInputAction;
 class UInputMappingContext;
 struct FInputActionValue;
@@ -31,6 +32,9 @@ class AArenaShooterCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Equipment, meta = (AllowPrivateAccess = "true"))
+	UEquipmentComponent* EquipmentComponent;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))

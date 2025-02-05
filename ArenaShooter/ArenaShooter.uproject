@@ -27,6 +27,10 @@
 			"SupportedTargetPlatforms": [
 				"Win64"
 			]
+		},
+		{
+			"Name": "UdpMessaging",
+			"Enabled": false
 		}
 	]
 }
