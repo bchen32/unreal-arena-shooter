@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "Engine/EngineBaseTypes.h"
+#include "UpgradeSystem.h"
 #include "ArenaShooterCharacter.generated.h"
 
 class UInputComponent;
@@ -14,6 +15,7 @@ class UCameraComponent;
 class UEquipmentComponent;
 class UInputAction;
 class UInputMappingContext;
+class UUpgradeSystem;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -68,7 +70,8 @@ class AArenaShooterCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 	USoundBase* DashSound;
 
-	bool bCanDash;
+	int32 numDashes;
+	int32 maxDashes;
 
 	void EnableDash();
 
@@ -96,6 +99,9 @@ public:
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Upgrades")
+    UUpgradeSystem* UpgradeSystem;
 
 };
 
