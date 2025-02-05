@@ -13,7 +13,7 @@ AProjectile::AProjectile()
 
 	HitboxComponent = CreateDefaultSubobject<USphereComponent>(TEXT("HitboxComponent"));
 	HitboxComponent->InitSphereRadius(5.0f);
-	HitboxComponent->BodyInstance.SetCollisionProfileName("Projectile");
+	HitboxComponent->BodyInstance.SetCollisionProfileName("EnemyAttack");
 	// When it hits something, expire
 	HitboxComponent->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 	// Players can't walk on it
