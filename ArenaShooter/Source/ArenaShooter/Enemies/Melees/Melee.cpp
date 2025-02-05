@@ -13,7 +13,6 @@ void UMelee::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 	{
 		Player->TakeDamage(Damage, FPointDamageEvent(), nullptr, GetOwner());
 	}
-
 }
 
 void UMelee::BeginPlay()
