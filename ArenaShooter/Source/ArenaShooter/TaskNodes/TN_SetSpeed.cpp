@@ -11,10 +11,10 @@ UTN_SetSpeed::UTN_SetSpeed()
 
 EBTNodeResult::Type UTN_SetSpeed::ExecuteTask(UBehaviorTreeComponent& OwnerComponent, uint8* NodeMemory)
 {
-	if (ACharacter* AICharacter = Cast<ACharacter>(OwnerComponent.GetAIController()->GetPawn()))
-	{
-		AICharacter->
-	}
+	//if (ACharacter* AICharacter = Cast<ACharacter>(OwnerComponent.GetAIController()->GetPawn()))
+	//{
+	//	AICharacter->
+	//}
 
 	return EBTNodeResult::Succeeded;
 }

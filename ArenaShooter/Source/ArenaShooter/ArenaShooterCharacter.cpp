@@ -100,7 +100,7 @@ float AArenaShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const&
 		if (GameMode)
 		{
 			GameMode->EndLevel();
-			UGameplayStatics::OpenLevel(GetWorld(), FName("MainMenu"));
+			UGameplayStatics::OpenLevel(GetWorld(), FName("MainMenuMap"));
 		}
 		// Handle death (you can call a custom death function, play an animation, etc.)
 		Destroy();

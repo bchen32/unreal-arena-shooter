@@ -12,7 +12,7 @@ AArenaShooterGameMode::AArenaShooterGameMode()
 	: Super()
 {
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/FirstPerson/Blueprints/BP_FirstPersonCharacter"));
+	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnClassFinder(TEXT("/Game/Player/BP_FirstPersonCharacter"));
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
 	EnemiesKilledGoal = 0;
@@ -62,6 +62,6 @@ void AArenaShooterGameMode::KilledEnemy()
 	if (++EnemiesKilled == EnemiesKilledGoal)
 	{
 		EndLevel();
-		UGameplayStatics::OpenLevel(GetWorld(), FName("MainMenu"));
+		UGameplayStatics::OpenLevel(GetWorld(), FName("MainMenuMap"));
 	}
 }
