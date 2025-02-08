@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ArenaShooterCharacter.h"
+#include "ArenaShooterGameInstance.h"
 #include "ArenaShooterGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -8,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "UpgradeSystem.h"
 #include "Weapons/EquipmentComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -37,8 +39,7 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	// Create equipment component
 	EquipmentComponent = CreateDefaultSubobject<UEquipmentComponent>(TEXT("Equipment"));
 
-  // Upgrade system component
-	UpgradeSystem = CreateDefaultSubobject<UUpgradeSystem>(TEXT("UpgradeSystem"));
+	UpgradeSystem = nullptr;
 
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;
@@ -54,6 +55,12 @@ void AArenaShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 	CurrHealth = MaxHealth;
 	numDashes = maxDashes;
+
+	UpgradeSystem = NewObject<UUpgradeSystem>(this);
+	if (UpgradeSystem)
+	{
+		UpgradeSystem->Initialize(this);
+	}
 	
 }
 

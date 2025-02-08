@@ -6,7 +6,6 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "Engine/EngineBaseTypes.h"
-#include "UpgradeSystem.h"
 #include "ArenaShooterCharacter.generated.h"
 
 class UInputComponent;
@@ -54,6 +53,12 @@ class AArenaShooterCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Sound to play on dash */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
+	USoundBase* DashSound;
+
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	float MouseSens;
 
@@ -65,10 +70,6 @@ class AArenaShooterCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 	float CurrHealth;
-
-	/** Sound to play on dash */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
-	USoundBase* DashSound;
 
 	int32 numDashes;
 	int32 maxDashes;

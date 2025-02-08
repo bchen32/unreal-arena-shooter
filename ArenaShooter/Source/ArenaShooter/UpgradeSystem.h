@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "ArenaShooterCharacter.h"
 #include "UpgradeSystem.generated.h"
 
 // Enum for upgrade types
@@ -24,12 +25,14 @@ public:
 	// Constructor
     UUpgradeSystem();
 
+	void Initialize(AArenaShooterCharacter* Owner);
+
 	// Array that holds upgrade tiers
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Upgrades")
     TArray<int32> UpgradeList;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Upgrades")
-	ACharacter* ArenaShooterCharacter;
+	AArenaShooterCharacter* Owner;
 
 	// Function to unlock an upgrade and increase its tier
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")

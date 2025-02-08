@@ -62,6 +62,6 @@ void AArenaShooterGameMode::KilledEnemy()
 	if (++EnemiesKilled == EnemiesKilledGoal)
 	{
 		EndLevel();
-		UGameplayStatics::OpenLevel(GetWorld(), FName("MainMenuMap"));
+		UGameplayStatics::OpenLevel(GetWorld(), FName("UpgradeMap"));
 	}
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "UpgradeSystem.h"
 #include "ArenaShooterGameInstance.generated.h"
 
 /**
@@ -20,9 +21,15 @@ protected:
 public:
 	UArenaShooterGameInstance();
 
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+    TArray<int32> UpgradeList;
+
 	UFUNCTION(BlueprintCallable)
 	float GetHighScore() const { return HighScore; }
 	UFUNCTION(BlueprintCallable)
 	void SetHighScore(float NewHighScore);
+
+	UFUNCTION(BlueprintCallable)
+    void Upgrade(EUpgradeType UpgradeType);
 
 };

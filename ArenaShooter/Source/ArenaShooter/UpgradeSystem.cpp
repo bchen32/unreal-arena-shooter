@@ -1,5 +1,6 @@
 #include "UpgradeSystem.h"
 #include "ArenaShooterCharacter.h"
+#include "ArenaShooterGameInstance.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -7,24 +8,40 @@
 UUpgradeSystem::UUpgradeSystem()
 {
 
-    // Initialize upgrades list with the starting tier 0 (no upgrades).
-    int32 NumUpgrades = static_cast<int32>(EUpgradeType::Max);
-    UpgradeList.Init(0, NumUpgrades);
-
 }
+
+void UUpgradeSystem::Initialize(AArenaShooterCharacter* Character)
+{
+
+    UArenaShooterGameInstance* GameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+    if (GameInstance)
+    {
+        Owner = Character;
+        UpgradeList = GameInstance->UpgradeList;
+
+        for (int32 i = 0; i < UpgradeList.Num(); i++)
+        {
+            if (UpgradeList[i] > 0) // If upgrade has been unlocked
+            {
+                Upgrade(static_cast<EUpgradeType>(i)); // Apply upgrade
+            }
+        }
+    }
+}
+
+
 // Function to unlock an upgrade and increase its tier
 void UUpgradeSystem::Upgrade(EUpgradeType UpgradeType)
 {
-    ArenaShooterCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+    Owner = Cast<AArenaShooterCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
-    int32 UpgradeIndex = static_cast<int32>(UpgradeType);
-    if (UpgradeIndex >= 0 && UpgradeIndex < UpgradeList.Num())
-    {
-        UpgradeList[UpgradeIndex] += 1;
-    }
 
     if (UpgradeType == EUpgradeType::DoubleJump) {
         DoubleJump();
+    }
+    if (UpgradeType == EUpgradeType::DoubleDash) {
+        DoubleDash();
     }
 
 }
@@ -42,19 +59,16 @@ int32 UUpgradeSystem::GetUpgradeTier(EUpgradeType UpgradeType) const
 
 void UUpgradeSystem::DoubleJump()
 {
-    if (ArenaShooterCharacter)
+    if (Owner)
     {
-        ArenaShooterCharacter->JumpMaxCount = 2;
+        Owner->JumpMaxCount = 2;
     }
 }
 
 void UUpgradeSystem::DoubleDash()
 {   
-    /*
-    ArenaShooterCharacter = Cast<AArenaShooterCharacter>(ArenaShooterCharacter);
-    if (ArenaShooterCharacter)
+    if (Owner)
     {
-        ArenaShooterCharacter->maxDashes = 2;
+        Owner->maxDashes = 2;
     }
-    */
 }

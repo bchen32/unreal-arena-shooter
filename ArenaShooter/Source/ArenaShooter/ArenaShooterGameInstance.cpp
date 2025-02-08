@@ -6,6 +6,9 @@
 UArenaShooterGameInstance::UArenaShooterGameInstance()
 {
 	HighScore = 0;
+
+	int32 NumUpgrades = static_cast<int32>(EUpgradeType::Max);
+    UpgradeList.Init(0, NumUpgrades);
 }
 
 void UArenaShooterGameInstance::SetHighScore(float NewHighScore)
@@ -14,4 +17,13 @@ void UArenaShooterGameInstance::SetHighScore(float NewHighScore)
 	{
 		HighScore = NewHighScore;
 	}
+}
+
+void UArenaShooterGameInstance::Upgrade(EUpgradeType UpgradeType)
+{
+    int32 Index = static_cast<int32>(UpgradeType);
+    if (Index >= 0 && Index < UpgradeList.Num())
+    {
+        UpgradeList[Index]++;
+    }
 }
