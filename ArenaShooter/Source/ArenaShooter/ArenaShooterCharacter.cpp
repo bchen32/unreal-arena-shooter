@@ -44,8 +44,8 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;
 	GetCharacterMovement()->AirControlBoostVelocityThreshold = 0.0f;
-	maxDashes = 1;
-	DashCooldown = 1.0f;
+	maxDashes = 3;
+	DashCooldown = 5.0f;
 	MaxHealth = CurrHealth = 10.0f;
 }	
 
@@ -66,7 +66,18 @@ void AArenaShooterCharacter::BeginPlay()
 
 void AArenaShooterCharacter::EnableDash()
 {
-	numDashes = maxDashes;
+	if (ActiveDashTimers.Num() > 0)
+    {
+        ActiveDashTimers.RemoveAt(0);
+    }
+	if (numDashes < maxDashes) {
+		numDashes++;
+	}
+	if (GEngine)
+    {
+        FString JumpCountMessage = FString::Printf(TEXT("Dashes: %d"), numDashes);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, JumpCountMessage);
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -136,7 +147,10 @@ void AArenaShooterCharacter::Dash(const FInputActionValue& Value)
 				LaunchCharacter(DashDir * 5000.0f, false, true);
 			}
 			numDashes--;
+
+			FTimerHandle DashTimerHandle;
 			GetWorld()->GetTimerManager().SetTimer(DashTimerHandle, this, &AArenaShooterCharacter::EnableDash, DashCooldown, false);
+			ActiveDashTimers.Add(DashTimerHandle);
 		}
 	}
 }

@@ -61,7 +61,7 @@ void UUpgradeSystem::DoubleJump()
 {
     if (Owner)
     {
-        Owner->JumpMaxCount = 2;
+        Owner->JumpMaxCount++;
     }
 }
 
@@ -69,6 +69,6 @@ void UUpgradeSystem::DoubleDash()
 {   
     if (Owner)
     {
-        Owner->maxDashes = 2;
+        Owner->maxDashes++;
     }
 }
