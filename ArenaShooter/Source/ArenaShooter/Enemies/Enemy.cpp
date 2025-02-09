@@ -3,6 +3,7 @@
 
 #include "Enemy.h"
 #include "Kismet/GameplayStatics.h"
+#include "Enemies/Accessories/EnemyHealthbarComponent.h"
 #include "../ArenaShooterGameMode.h"
 #include "../ArenaShooterGameState.h"
 
@@ -14,6 +15,9 @@ AEnemy::AEnemy()
 	MaxHealth = Health = 40.0f;
 
 	BehaviorTree = nullptr;
+	
+	Healthbar = CreateDefaultSubobject<UEnemyHealthbarComponent>(FName("Healthbar"));
+	Healthbar->SetupAttachment(RootComponent);
 }
 
 void AEnemy::SetHealth(float NewHealth)

@@ -15,6 +15,7 @@ class ARENASHOOTER_API AEnemy : public ACharacter
 {
 	GENERATED_BODY()
 private:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float MaxHealth;
 
@@ -22,13 +23,16 @@ private:
 
 protected:
 	UPROPERTY(EditAnywhere)
+	class UEnemyHealthbarComponent* Healthbar;
+
+	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BehaviorTree;
 
+public:	
 	/** Event for when the health changes */
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
-public:	
 	/** Event for when enemy dies */
 	FOnDeath OnDeath;
 
@@ -36,8 +40,12 @@ public:
 	AEnemy();
 
 	UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
+	float GetMaxHealth() const { return MaxHealth; }
+	void SetMaxHealth(float NewMaxHealth) { MaxHealth = NewMaxHealth; }
 	float GetHealth() const { return Health; }
 	void SetHealth(float NewHealth);
+	
+
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void Attack();
