@@ -25,6 +25,9 @@ protected:
 	float ProjectileSpeed;
 
 	UPROPERTY(EditAnywhere)
+	FVector ProjectileOriginLocalOffset;
+
+	UPROPERTY(EditAnywhere)
 	float MuzzleLateralOffset;
 
 	UPROPERTY(EditAnywhere)

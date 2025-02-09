@@ -8,6 +8,7 @@ AShooterEnemy::AShooterEnemy()
 {
 	ProjectileType = AProjectile::StaticClass();
 	ProjectileSpeed = 2000.0f;
+	ProjectileOriginLocalOffset = FVector::Zero();
 	MuzzleLateralOffset = 100.0f;
 	MuzzleZOffset = 60.0f;
 }
@@ -26,9 +27,10 @@ void AShooterEnemy::Attack()
 			{
 				if (AActor* Target = Cast<AActor>(EnemyController->GetBlackboardComponent()->GetValueAsObject(FName("Target"))))
 				{
-					FVector TargetDir = (Target->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-					FVector LateralDir = FVector(TargetDir.X, TargetDir.Y, 0.0f).GetSafeNormal() * MuzzleLateralOffset;
-					FTransform Transform = FTransform(TargetDir.Rotation(), GetActorLocation() + LateralDir + FVector(0.0f, 0.0f, MuzzleZOffset));
+					FVector Origin = GetActorLocation() + ProjectileOriginLocalOffset;
+					FVector TargetDir = (Target->GetActorLocation() - Origin).GetSafeNormal();
+					FVector LateralDir = TargetDir * MuzzleLateralOffset;
+					FTransform Transform = FTransform(TargetDir.Rotation(), Origin + LateralDir + FVector(0.0f, 0.0f, MuzzleZOffset));
 
 					// Spawn the projectile at desired location
 					AProjectile* Projectile = World->SpawnActorDeferred<AProjectile>(ProjectileType, Transform);
