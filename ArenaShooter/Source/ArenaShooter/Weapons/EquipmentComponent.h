@@ -8,7 +8,7 @@
 
 class AArenaShooterCharacter;
 class APlayerController;
-class ABaseWeapon;
+class AWeapon;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEquipment, Log, All);
 
@@ -17,37 +17,38 @@ class ARENASHOOTER_API UEquipmentComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-private:
+protected:
 	// Input
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* ShootAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* ReloadAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SwitchForwardAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SwitchBackwardAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SelectAction0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SelectAction1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* SelectAction2;
 
 	// Weapons
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equipment, meta = (AllowPrivateAccess = "true"))
-	TArray<TSubclassOf<ABaseWeapon>> WeaponClasses;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equipment)
+	int32 StartingWeapon;
 
-	TArray<ABaseWeapon*> Weapons;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equipment)
+	TArray<TSubclassOf<AWeapon>> WeaponClasses;
+
+	TArray<AWeapon*> Weapons;
 	int32 CurrWeaponIdx;
-
-	// Character
 	AArenaShooterCharacter* OwningCharacter;
 	APlayerController* OwningController;
 
@@ -57,7 +58,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
 	bool ValidWeapon(int32 idx);
 
 	void StartShoot();

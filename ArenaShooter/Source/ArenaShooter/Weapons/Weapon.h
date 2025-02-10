@@ -4,29 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BaseWeapon.generated.h"
+#include "Weapon.generated.h"
 
 class AArenaShooterCharacter;
 class AArenaShooterPlayerController;
+class UAudioComponent;
 class USkeletalMeshComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapons, Log, All);
 
 UCLASS()
-class ARENASHOOTER_API ABaseWeapon : public AActor
+class ARENASHOOTER_API AWeapon : public AActor
 {
 	GENERATED_BODY()
-
-private:
-	int32 CurrAmmo;
-	float TimeSinceLastShot;
-	bool bIsShooting;
-	bool bIsReloading;
-	bool bIsActive;
-	FTimerHandle PulloutTimerHandle;
-	FTimerHandle ReloadTimerHandle;
-	AArenaShooterCharacter* OwningCharacter;
-	AArenaShooterPlayerController* OwningController;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Mesh)
@@ -34,7 +24,7 @@ protected:
 
 	// Sound effects
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
-	USoundBase* ShootSound;
+	USoundBase* ShootMetaSound; // handles shoot, echo, hit, and critical hit
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
 	USoundBase* KillSound;
@@ -66,14 +56,33 @@ protected:
 	float ShootCooldown;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Gameplay)
-	float PulloutTime;
+	float EquipTime;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Gameplay)
 	bool bIsSemiAuto;
 
-public:
-	ABaseWeapon();
+	int32 CurrAmmo;
+	float TimeSinceLastShot;
+	bool bIsShooting;
+	bool bIsReloading;
+	bool bIsActive;
+	UAudioComponent* EquipAudioComponent;
+	UAudioComponent* ReloadAudioComponent;
+	UAudioComponent* ShootAudioComponent;
+	FTimerHandle EquipTimerHandle;
+	FTimerHandle ReloadTimerHandle;
+	AArenaShooterCharacter* OwningCharacter;
+	AArenaShooterPlayerController* OwningController;
 
+public:
+	AWeapon();
+
+protected:
+	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void StartShoot();
@@ -93,16 +102,12 @@ public:
 	USkeletalMeshComponent* GetGunMesh() const { return GunMesh; }
 
 protected:
-	virtual void CompletePullout();
+	virtual void CompleteEquip();
 
 	virtual void CompleteReload();
 
 	virtual void PlayAnim(UAnimMontage* Anim);
 
 	virtual void UpdateHUD();
-
-	virtual void BeginPlay() override;
-
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 };

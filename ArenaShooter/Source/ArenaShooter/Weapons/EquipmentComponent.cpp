@@ -7,13 +7,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerController.h"
-#include "Weapons/BaseWeapon.h"
+#include "Weapons/Weapon.h"
 
 DEFINE_LOG_CATEGORY(LogEquipment);
 
 UEquipmentComponent::UEquipmentComponent()
 {
-	CurrWeaponIdx = 0;
+	StartingWeapon = 0;
 }
 
 void UEquipmentComponent::BeginPlay()
@@ -57,11 +57,11 @@ void UEquipmentComponent::BeginPlay()
 		UE_LOG(LogEquipment, Error, TEXT("Failed to initialize EquipmentComponent, no owner"));
 	}
 	// Spawn guns
-	for (TSubclassOf<ABaseWeapon> WeaponClass : WeaponClasses)
+	for (TSubclassOf<AWeapon> WeaponClass : WeaponClasses)
 	{
 		if (UWorld* World = GetWorld())
 		{
-			ABaseWeapon* NewWeapon = World->SpawnActor<ABaseWeapon>(WeaponClass);
+			AWeapon* NewWeapon = World->SpawnActor<AWeapon>(WeaponClass);
 			if (NewWeapon)
 			{
 				Weapons.Add(NewWeapon);
@@ -70,6 +70,7 @@ void UEquipmentComponent::BeginPlay()
 		}
 	}
 	// Activate starting weapon
+	CurrWeaponIdx = StartingWeapon;
 	if (ValidWeapon(CurrWeaponIdx))
 	{
 		Weapons[CurrWeaponIdx]->Enable();

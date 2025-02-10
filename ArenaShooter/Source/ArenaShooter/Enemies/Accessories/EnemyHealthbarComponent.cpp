@@ -36,7 +36,8 @@ void UEnemyHealthbarComponent::BeginPlay()
 void UEnemyHealthbarComponent::BindToHealth()
 {
 	// If we are attached to enemy
-	if ((EnemyOwner = Cast<AEnemy>(GetOwner())))
+	EnemyOwner = Cast<AEnemy>(GetOwner());
+	if (EnemyOwner)
 	{
 		// Bind enemy's health change = change the progress bar
 		EnemyOwner->OnHealthChanged.AddDynamic(this, &UEnemyHealthbarComponent::UpdateHealthbarProgress);
