@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UpgradeSystem.h"
+#include "ArenaShooterGameInstance.h"
 #include "Weapons/EquipmentComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -62,7 +63,10 @@ void AArenaShooterCharacter::BeginPlay()
 
 	CurrHealth = MaxHealth;
 	numDashes = maxDashes;
-	
+	if (UArenaShooterGameInstance* ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	{
+		MouseSens = ASGameInstance->GetSensitivity();
+	}
 }
 
 void AArenaShooterCharacter::EnableDash()
