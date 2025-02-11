@@ -59,11 +59,9 @@ void AArenaShooterGameMode::AddToKillGoal(int AdditionalKills)
 
 void AArenaShooterGameMode::KilledEnemy()
 {
-	EndLevel();
-	UGameplayStatics::OpenLevel(GetWorld(), FName("UpgradeMap"));
-	// if (++EnemiesKilled == EnemiesKilledGoal)
-	// {
-	// 	EndLevel();
-	// 	UGameplayStatics::OpenLevel(GetWorld(), FName("UpgradeMap"));
-	// }
+	if (++EnemiesKilled == EnemiesKilledGoal)
+	{
+		EndLevel();
+		UGameplayStatics::OpenLevel(GetWorld(), FName("UpgradeMap"));
+	}
 }
