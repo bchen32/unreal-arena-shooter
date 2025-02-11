@@ -24,16 +24,7 @@ protected:
 
 	// Sound effects
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
-	USoundBase* ShootMetaSound; // handles shoot, echo, hit, and critical hit
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
-	USoundBase* KillSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
-	USoundBase* ReloadSound;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
-	USoundBase* EquipSound;
+	USoundBase* MetaSound; // handles all sfx logic
 
 	// Animations
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Visual)
@@ -66,9 +57,7 @@ protected:
 	bool bIsShooting;
 	bool bIsReloading;
 	bool bIsActive;
-	UAudioComponent* EquipAudioComponent;
-	UAudioComponent* ReloadAudioComponent;
-	UAudioComponent* ShootAudioComponent;
+	UAudioComponent* AudioComponent;
 	FTimerHandle EquipTimerHandle;
 	FTimerHandle ReloadTimerHandle;
 	AArenaShooterCharacter* OwningCharacter;

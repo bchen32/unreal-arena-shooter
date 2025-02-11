@@ -22,16 +22,11 @@ AWeapon::AWeapon()
 	GunMesh->CastShadow = false;
 	RootComponent = GunMesh;
 
-	// Audio components
-	EquipAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("EquipAudioComponent"));
-	EquipAudioComponent->bAutoActivate = false;
-	EquipAudioComponent->SetupAttachment(RootComponent);
-	ReloadAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ReloadAudioComponent"));
-	ReloadAudioComponent->bAutoActivate = false;
-	ReloadAudioComponent->SetupAttachment(RootComponent);
-	ShootAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootAudioComponent"));
-	ShootAudioComponent->bAutoActivate = false;
-	ShootAudioComponent->SetupAttachment(RootComponent);
+	// Audio component
+	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ShootAudioComponent"));
+	AudioComponent->bAutoActivate = false;
+	AudioComponent->bAllowSpatialization = false; // no point spatializing player sound, just play as 2D stereo
+	AudioComponent->SetupAttachment(RootComponent);
 
 	Damage = 1.0f;
 	MaxAmmo = 80;
@@ -46,17 +41,9 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	if (EquipSound)
+	if (MetaSound)
 	{
-		EquipAudioComponent->SetSound(EquipSound);
-	}
-	if (ReloadSound)
-	{
-		ReloadAudioComponent->SetSound(ReloadSound);
-	}
-	if (ShootMetaSound)
-	{
-		ShootAudioComponent->SetSound(ShootMetaSound);
+		AudioComponent->SetSound(MetaSound);
 	}
 	CurrAmmo = MaxAmmo;
 	TimeSinceLastShot = 0.0f;
@@ -123,14 +110,14 @@ void AWeapon::Tick(float DeltaTime)
 							if (UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent()))
 							{
 								ResultantDamage = WeakSpot->ApplyDamageModifier(Damage);
-								if (ShootAudioComponent)
+								if (AudioComponent)
 								{
-									ShootAudioComponent->SetTriggerParameter(FName("Critical"));
+									AudioComponent->SetTriggerParameter(FName("Critical"));
 								}
 							}
 							else
 							{
-								ShootAudioComponent->SetTriggerParameter(FName("Hit"));
+								AudioComponent->SetTriggerParameter(FName("Hit"));
 							}
 
 							UGameplayStatics::ApplyPointDamage(HitActor, ResultantDamage, HitResult.ImpactPoint, HitResult, OwningController, OwningCharacter, nullptr);
@@ -143,9 +130,9 @@ void AWeapon::Tick(float DeltaTime)
 					PlayAnim(ShootAnim);
 				}
 
-				if (ShootAudioComponent)
+				if (AudioComponent)
 				{
-					ShootAudioComponent->SetTriggerParameter(FName("Shoot"));
+					AudioComponent->SetTriggerParameter(FName("Shoot"));
 				}
 
 				// Play muzzle flash
@@ -187,9 +174,9 @@ void AWeapon::StartReload()
 			PlayAnim(ReloadAnim);
 		}
 
-		if (ReloadAudioComponent)
+		if (AudioComponent)
 		{
-			ReloadAudioComponent->Play();
+			AudioComponent->SetTriggerParameter(FName("Reload"));
 		}
 	}
 }
@@ -201,13 +188,10 @@ void AWeapon::Enable()
 	UpdateHUD();
 	// Play pull out animation TODO
 
-	if (EquipAudioComponent)
+	if (AudioComponent)
 	{
-		EquipAudioComponent->Play();
-	}
-	if (ShootAudioComponent)
-	{
-		ShootAudioComponent->Play(); // just activates metasound, doesn't trigger any sound
+		AudioComponent->Play(); // just activates metasound, doesn't trigger any sound
+		AudioComponent->SetTriggerParameter(FName("Equip"));
 	}
 }
 
@@ -218,25 +202,19 @@ void AWeapon::Disable()
 	bIsActive = false;
 	bIsShooting = false;
 	PrimaryActorTick.bCanEverTick = false;
-	if (EquipAudioComponent && EquipAudioComponent->IsPlaying())
+	if (AudioComponent && AudioComponent->IsPlaying())
 	{
-		EquipAudioComponent->Stop();
-	}
-	if (ReloadAudioComponent && ReloadAudioComponent->IsPlaying())
-	{
-		ReloadAudioComponent->Stop();
-	}
-	if (ShootAudioComponent && ShootAudioComponent->IsPlaying())
-	{
-		ShootAudioComponent->SetTriggerParameter(FName("Stop")); // metasound has a 1s delay on stop to allow last gunshot to finish
+		/* Metasound allows last gunshot to finish with a 1s delay on stop,
+		   but immediately mutes reload and equip */
+		AudioComponent->SetTriggerParameter(FName("Stop"));
 	}
 }
 
 void AWeapon::OnKill()
 {
-	if (KillSound)
+	if (AudioComponent)
 	{
-		UGameplayStatics::PlaySound2D(this, KillSound);
+		AudioComponent->SetTriggerParameter(FName("Kill"));
 	}
 	CompleteReload();
 }
