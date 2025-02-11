@@ -44,9 +44,14 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;
 	GetCharacterMovement()->AirControlBoostVelocityThreshold = 0.0f;
+
 	maxDashes = 1;
 	DashCooldown = 5.0f;
+
+	MaxSlowMo = CurSlowMo = 90.0f;
+
 	MaxHealth = CurrHealth = 10.0f;
+	
 }	
 
 void AArenaShooterCharacter::BeginPlay()
@@ -60,9 +65,9 @@ void AArenaShooterCharacter::BeginPlay()
 		UpgradeSystem->Initialize(this);
 	}
 
+	CurSlowMo = MaxSlowMo;
 	CurrHealth = MaxHealth;
 	numDashes = maxDashes;
-	
 }
 
 void AArenaShooterCharacter::EnableDash()
@@ -105,7 +110,7 @@ void AArenaShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaShooterCharacter::Look);
 
 
-		EnhancedInputComponent->BindAction(SlowMoAction, ETriggerEvent::Triggered, this, &AArenaShooterCharacter::SlowMotion);
+		EnhancedInputComponent->BindAction(SlowMoAction, ETriggerEvent::Started, this, &AArenaShooterCharacter::SlowMotion);
     	EnhancedInputComponent->BindAction(SlowMoAction, ETriggerEvent::Completed, this, &AArenaShooterCharacter::StopSlowMotion);
 	}
 	else
@@ -192,8 +197,16 @@ void AArenaShooterCharacter::Look(const FInputActionValue& Value)
 
 void AArenaShooterCharacter::SlowMotion()
 {
+	// if (GEngine)
+    // {
+    //     FString Test = FString::Printf(TEXT("TEST"));
+    //     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Purple, Test);
+    // }
 	if (UpgradeSystem->GetUpgradeTier(EUpgradeType::SlowMo) > 0) {
-		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+		if (CurSlowMo == MaxSlowMo) {
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+			GetWorld()->GetTimerManager().SetTimer(SlowMoDrainTimer, this, &AArenaShooterCharacter::DrainSlowMo, 0.1f, true);
+		}
 	}
 }
 
@@ -201,6 +214,45 @@ void AArenaShooterCharacter::StopSlowMotion()
 {
 	if (UpgradeSystem->GetUpgradeTier(EUpgradeType::SlowMo) > 0) {
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+
+		GetWorld()->GetTimerManager().ClearTimer(SlowMoDrainTimer);
+    	GetWorld()->GetTimerManager().SetTimer(SlowMoRechargeTimer, this, &AArenaShooterCharacter::RechargeSlowMo, 0.1f, true);
 	}
 }
+
+void AArenaShooterCharacter::DrainSlowMo()
+{
+	if (GEngine)
+    {
+        FString JumpCountMessage = FString::Printf(TEXT("Slow Mo: %f/%f"), CurSlowMo, MaxSlowMo);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, JumpCountMessage);
+    }
+    if (CurSlowMo > 0)
+    {
+        CurSlowMo -= 10.0f;
+    }
+    else
+    {
+        StopSlowMotion();
+    }
+}
+
+void AArenaShooterCharacter::RechargeSlowMo()
+{
+	if (GEngine)
+    {
+        FString JumpCountMessage = FString::Printf(TEXT("Slow Mo: %f/%f"), CurSlowMo, MaxSlowMo);
+        GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, JumpCountMessage);
+    }
+    if (CurSlowMo < MaxSlowMo)
+    {
+        CurSlowMo += 1.0f;
+    }
+    else
+    {
+        GetWorld()->GetTimerManager().ClearTimer(SlowMoRechargeTimer);
+    }
+}
+
+
 

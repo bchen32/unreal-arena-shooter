@@ -24,24 +24,26 @@ void UUpgradeSystem::Initialize(AArenaShooterCharacter* Character)
         {
             if (UpgradeList[i] > 0) // If upgrade has been unlocked
             {
-                Upgrade(static_cast<EUpgradeType>(i)); // Apply upgrade
+                Upgrade(static_cast<EUpgradeType>(i), UpgradeList[i]); // Apply upgrade
             }
         }
     }
 }
 
 
-// Function to unlock an upgrade and increase its tier
-void UUpgradeSystem::Upgrade(EUpgradeType UpgradeType)
+void UUpgradeSystem::Upgrade(EUpgradeType UpgradeType, int32 Tier)
 {
     Owner = Cast<AArenaShooterCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 
     if (UpgradeType == EUpgradeType::DoubleJump) {
-        DoubleJump();
+        DoubleJump(Tier);
     }
     if (UpgradeType == EUpgradeType::DoubleDash) {
-        DoubleDash();
+        DoubleDash(Tier);
+    }
+    if (UpgradeType == EUpgradeType::SlowMo) {
+        SlowMo(Tier);
     }
 
 }
@@ -57,18 +59,26 @@ int32 UUpgradeSystem::GetUpgradeTier(EUpgradeType UpgradeType) const
     return 0;
 }
 
-void UUpgradeSystem::DoubleJump()
+void UUpgradeSystem::DoubleJump(int32 Tier)
 {
     if (Owner)
     {
-        Owner->JumpMaxCount++;
+        Owner->JumpMaxCount += Tier;
     }
 }
 
-void UUpgradeSystem::DoubleDash()
+void UUpgradeSystem::DoubleDash(int32 Tier)
 {   
     if (Owner)
     {
-        Owner->maxDashes++;
+        Owner->maxDashes += Tier;
+    }
+}
+
+void UUpgradeSystem::SlowMo(int32 Tier)
+{   
+    if (Owner)
+    {
+        Owner->MaxSlowMo += 10.0f * Tier;
     }
 }
