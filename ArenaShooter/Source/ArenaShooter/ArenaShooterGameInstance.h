@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "UpgradeSystem.h"
+#include "SettingsSaveGame.h"
 #include "ArenaShooterGameInstance.generated.h"
 
 /**
@@ -17,6 +18,10 @@ class ARENASHOOTER_API UArenaShooterGameInstance : public UGameInstance
 	
 private:
 	float HighScore;
+
+	float Sensitivity;
+
+	void SaveSettings();
 protected:
 public:
 	UArenaShooterGameInstance();
@@ -28,6 +33,11 @@ public:
 	float GetHighScore() const { return HighScore; }
 	UFUNCTION(BlueprintCallable)
 	void SetHighScore(float NewHighScore);
+	
+	float GetSensitivity() const { return Sensitivity; }
+	void SetSensitivity(float NewSensitivity);
+
+	virtual void Init() override;
 
 	UFUNCTION(BlueprintCallable)
     void Upgrade(EUpgradeType UpgradeType);

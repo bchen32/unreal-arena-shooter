@@ -2,10 +2,24 @@
 
 
 #include "ArenaShooterGameInstance.h"
+#include "Kismet/GameplayStatics.h"
+
+void UArenaShooterGameInstance::SaveSettings()
+{
+	if (USettingsSaveGame* SaveGameObject = Cast<USettingsSaveGame>(UGameplayStatics::CreateSaveGameObject(USettingsSaveGame::StaticClass())))
+	{
+		// Settings we are saving
+		SaveGameObject->Sensitivity = Sensitivity;
+
+		// Save it to disk
+		UGameplayStatics::AsyncSaveGameToSlot(SaveGameObject, FString(TEXT("Settings")), 0);
+	}
+}
 
 UArenaShooterGameInstance::UArenaShooterGameInstance()
 {
 	HighScore = 0;
+	Sensitivity = 1.0f;
 
 	int32 NumUpgrades = static_cast<int32>(EUpgradeType::Max);
     UpgradeList.Init(0, NumUpgrades);
@@ -16,6 +30,28 @@ void UArenaShooterGameInstance::SetHighScore(float NewHighScore)
 	if (HighScore < NewHighScore)
 	{
 		HighScore = NewHighScore;
+	}
+}
+
+void UArenaShooterGameInstance::SetSensitivity(float NewSensitivity)
+{
+	if (Sensitivity != NewSensitivity)
+	{
+		Sensitivity = NewSensitivity;
+		SaveSettings();
+	}
+}
+
+void UArenaShooterGameInstance::Init()
+{
+	// Load the settings
+	if (USettingsSaveGame* SettingsSave = Cast<USettingsSaveGame>(UGameplayStatics::LoadGameFromSlot(FString(TEXT("Settings")), 0)))
+	{
+		Sensitivity = SettingsSave->Sensitivity;
+	}
+	else
+	{
+		Sensitivity = 1.0f;
 	}
 }
 
