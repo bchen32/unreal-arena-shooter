@@ -36,15 +36,18 @@ public:
 
 	// Function to unlock an upgrade and increase its tier
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")
-    void Upgrade(EUpgradeType UpgradeType);
+    void Upgrade(EUpgradeType UpgradeType, int32 Tier);
 
 	// Function to get the tier of an upgrade
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")
     int32 GetUpgradeTier(EUpgradeType UpgradeType) const;
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")
-    void DoubleJump();
+    void DoubleJump(int32 Tier);
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")
-    void DoubleDash();
+    void DoubleDash(int32 Tier);
+
+	UFUNCTION(BlueprintCallable, Category = "Upgrades")
+    void SlowMo(int32 Tier);
 };

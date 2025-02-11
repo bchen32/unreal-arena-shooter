@@ -26,6 +26,9 @@ class AArenaShooterCharacter : public ACharacter
 
 	TArray<FTimerHandle> ActiveDashTimers;
 
+	FTimerHandle SlowMoRechargeTimer;
+	FTimerHandle SlowMoDrainTimer;
+
 	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* Mesh1P;
@@ -79,6 +82,9 @@ public:
 
 	void EnableDash();
 
+	float CurSlowMo; 
+	float MaxSlowMo;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -94,6 +100,9 @@ protected:
 	/** Called for slowmo input */
 	void SlowMotion();
 	void StopSlowMotion();
+
+	void RechargeSlowMo();
+	void DrainSlowMo();
 
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;

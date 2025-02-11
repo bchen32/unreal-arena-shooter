@@ -57,6 +57,10 @@ void AWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(EquipTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+	if (AudioComponent)
+	{
+		AudioComponent->SetTriggerParameter(FName("Stop"));
+	}
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -204,9 +208,7 @@ void AWeapon::Disable()
 	PrimaryActorTick.bCanEverTick = false;
 	if (AudioComponent && AudioComponent->IsPlaying())
 	{
-		/* Metasound allows last gunshot to finish with a 1s delay on stop,
-		   but immediately mutes reload and equip */
-		AudioComponent->SetTriggerParameter(FName("Stop"));
+		AudioComponent->SetTriggerParameter(FName("Switch"));
 	}
 }
 

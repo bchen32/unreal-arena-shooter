@@ -23,6 +23,11 @@ UArenaShooterGameInstance::UArenaShooterGameInstance()
 
 	int32 NumUpgrades = static_cast<int32>(EUpgradeType::Max);
     UpgradeList.Init(0, NumUpgrades);
+
+    // Testing purposes
+    // UpgradeList[static_cast<int32>(EUpgradeType::DoubleJump)] = 0;
+    // UpgradeList[static_cast<int32>(EUpgradeType::DoubleDash)] = 0;
+    // UpgradeList[static_cast<int32>(EUpgradeType::SlowMo)] = 1;
 }
 
 void UArenaShooterGameInstance::SetHighScore(float NewHighScore)
