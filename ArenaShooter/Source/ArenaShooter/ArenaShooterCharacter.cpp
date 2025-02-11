@@ -44,7 +44,7 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 	MouseSens = 0.15f;
 	GetCharacterMovement()->AirControl = 1.0f;
 	GetCharacterMovement()->AirControlBoostVelocityThreshold = 0.0f;
-	maxDashes = 3;
+	maxDashes = 1;
 	DashCooldown = 5.0f;
 	MaxHealth = CurrHealth = 10.0f;
 }	
@@ -53,14 +53,15 @@ void AArenaShooterCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
-	CurrHealth = MaxHealth;
-	numDashes = maxDashes;
 
 	UpgradeSystem = NewObject<UUpgradeSystem>(this);
 	if (UpgradeSystem)
 	{
 		UpgradeSystem->Initialize(this);
 	}
+
+	CurrHealth = MaxHealth;
+	numDashes = maxDashes;
 	
 }
 
@@ -99,6 +100,13 @@ void AArenaShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaShooterCharacter::Look);
+
+		// Slow Motion
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AArenaShooterCharacter::Look);
+
+
+		EnhancedInputComponent->BindAction(SlowMoAction, ETriggerEvent::Triggered, this, &AArenaShooterCharacter::SlowMotion);
+    	EnhancedInputComponent->BindAction(SlowMoAction, ETriggerEvent::Completed, this, &AArenaShooterCharacter::StopSlowMotion);
 	}
 	else
 	{
@@ -181,3 +189,18 @@ void AArenaShooterCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
+
+void AArenaShooterCharacter::SlowMotion()
+{
+	if (UpgradeSystem->GetUpgradeTier(EUpgradeType::SlowMo) > 0) {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+	}
+}
+
+void AArenaShooterCharacter::StopSlowMotion()
+{
+	if (UpgradeSystem->GetUpgradeTier(EUpgradeType::SlowMo) > 0) {
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	}
+}
+

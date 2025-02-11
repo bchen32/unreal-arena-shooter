@@ -11,7 +11,7 @@ enum class EUpgradeType : uint8
 {
     DoubleJump UMETA(DisplayName = "Double Jump"),
     DoubleDash UMETA(DisplayName = "Double Dash"),
-    Ability3 UMETA(DisplayName = "Ability 3"),
+    SlowMo UMETA(DisplayName = "Slow Motion"),
     Max UMETA(Hidden)
 };
 
