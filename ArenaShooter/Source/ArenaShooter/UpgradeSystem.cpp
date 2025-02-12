@@ -82,3 +82,8 @@ void UUpgradeSystem::SlowMo(int32 Tier)
         Owner->MaxSlowMo += 10.0f * Tier;
     }
 }
+
+void UUpgradeSystem::Highlight(int32 Tier)
+{   
+    //WIP
+}

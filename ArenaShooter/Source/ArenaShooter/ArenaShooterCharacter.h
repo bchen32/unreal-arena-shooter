@@ -107,6 +107,8 @@ protected:
 	void RechargeSlowMo();
 	void DrainSlowMo();
 
+	void Highlight();
+
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface

@@ -12,6 +12,7 @@ enum class EUpgradeType : uint8
     DoubleJump UMETA(DisplayName = "Double Jump"),
     DoubleDash UMETA(DisplayName = "Double Dash"),
     SlowMo UMETA(DisplayName = "Slow Motion"),
+	Highlight UMETA(DisplayName = "Highlights Enemies"),
     Max UMETA(Hidden)
 };
 
@@ -50,4 +51,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Upgrades")
     void SlowMo(int32 Tier);
+
+	UFUNCTION(BlueprintCallable, Category = "Upgrades")
+    void Highlight(int32 Tier);
 };

@@ -274,5 +274,17 @@ void AArenaShooterCharacter::RechargeSlowMo()
     }
 }
 
+// WIP
+void AArenaShooterCharacter::Highlight()
+{
+
+	// UMaterialInterface* Outline = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Enemies/Shooter/M_Outline.M_Outline"));
+
+    // if (Outline && Mesh1P)
+    // {
+    //     // Set the material on the mesh
+    //     Mesh1P->SetOverlayMaterial(OutlineMaterial);
+    // }
+}
 
 
