@@ -56,7 +56,8 @@ void AArenaShooterPlayerController::TogglePauseMenu()
 	if (IsPauseMenuOpen == false)
 	{
 		// Opening pause menu
-		if ((PauseMenuWidget = CreateWidget<UUserWidget>(this, PauseMenuType)))
+		PauseMenuWidget = CreateWidget<UUserWidget>(this, PauseMenuType);
+		if (PauseMenuWidget)
 		{
 			PauseMenuWidget->AddToViewport();
 			IsPauseMenuOpen = true;
@@ -75,7 +76,7 @@ void AArenaShooterPlayerController::TogglePauseMenu()
 		// Closing pause menu
 		if (PauseMenuWidget)
 		{
-			PauseMenuWidget->RemoveFromViewport();
+			PauseMenuWidget->RemoveFromParent();
 			PauseMenuWidget = nullptr;
 			IsPauseMenuOpen = false;
 			UGameplayStatics::SetGamePaused(GetWorld(), false);

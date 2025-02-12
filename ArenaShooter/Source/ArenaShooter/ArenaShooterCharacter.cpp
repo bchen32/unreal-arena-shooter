@@ -69,7 +69,8 @@ void AArenaShooterCharacter::BeginPlay()
 	CurSlowMo = MaxSlowMo;
 	CurrHealth = MaxHealth;
 	numDashes = maxDashes;
-	if ((ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))))
+	ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	if (ASGameInstance)
 	{
 		MouseSens = ASGameInstance->GetSensitivity();
 	}
@@ -202,7 +203,8 @@ void AArenaShooterCharacter::Look(const FInputActionValue& Value)
 		else
 		{
 			// null, try again
-			if ((ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))))
+			ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+			if (ASGameInstance)
 			{
 				MouseSens = ASGameInstance->GetSensitivity();
 			}
