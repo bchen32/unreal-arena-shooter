@@ -33,7 +33,7 @@ AProjectile::AProjectile()
 	ProjectileMovementComponent->bShouldBounce = false;
 	ProjectileMovementComponent->bRotationFollowsVelocity = false;
 	ProjectileMovementComponent->bInitialVelocityInLocalSpace = false;
-	Damage = 10.0f;
+	Damage = 30.0f;
 	Lifetime = 5.0f;
 }
 
