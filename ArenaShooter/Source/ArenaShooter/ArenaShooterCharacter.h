@@ -16,6 +16,7 @@ class UInputAction;
 class UInputMappingContext;
 class UUpgradeSystem;
 struct FInputActionValue;
+class UArenaShooterGameInstance;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -62,6 +63,8 @@ class AArenaShooterCharacter : public ACharacter
 	/** Sound to play on dash */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta = (AllowPrivateAccess = "true"))
 	USoundBase* DashSound;
+
+	UArenaShooterGameInstance* ASGameInstance;
 
 public:
 

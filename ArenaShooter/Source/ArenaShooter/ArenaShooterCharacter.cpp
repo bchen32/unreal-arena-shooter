@@ -10,7 +10,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "UpgradeSystem.h"
-#include "ArenaShooterGameInstance.h"
 #include "Weapons/EquipmentComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -53,6 +52,7 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 
 	MaxHealth = CurrHealth = 10.0f;
 	
+	ASGameInstance = nullptr;
 }	
 
 void AArenaShooterCharacter::BeginPlay()
@@ -69,7 +69,7 @@ void AArenaShooterCharacter::BeginPlay()
 	CurSlowMo = MaxSlowMo;
 	CurrHealth = MaxHealth;
 	numDashes = maxDashes;
-	if (UArenaShooterGameInstance* ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld())))
+	if ((ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))))
 	{
 		MouseSens = ASGameInstance->GetSensitivity();
 	}
@@ -194,6 +194,19 @@ void AArenaShooterCharacter::Look(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// add yaw and pitch input to controller
+		if (ASGameInstance)
+		{
+			// Get updated sensitvity if they changed in pause menu
+			MouseSens = ASGameInstance->GetSensitivity();
+		}
+		else
+		{
+			// null, try again
+			if ((ASGameInstance = Cast<UArenaShooterGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()))))
+			{
+				MouseSens = ASGameInstance->GetSensitivity();
+			}
+		}
 		LookAxisVector *= MouseSens;
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
