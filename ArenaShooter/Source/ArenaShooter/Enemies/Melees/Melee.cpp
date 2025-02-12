@@ -17,6 +17,8 @@ void UMelee::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 
 void UMelee::BeginPlay()
 {
+	Super::BeginPlay();
+
 	OnComponentBeginOverlap.AddDynamic(this, &UMelee::OnOverlap);
 }
 
