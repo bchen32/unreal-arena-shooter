@@ -81,9 +81,9 @@ void AWeapon::Tick(float DeltaTime)
 				TimeSinceLastShot = 0.0f;
 				--CurrAmmo;
 				// Line trace
-				if (!IsValid(OwningController))
+				if (!IsValid(OwningController) || !IsValid(OwningCharacter))
 				{
-					UE_LOG(LogWeapons, Error, TEXT("Can't linetrace, no owning Controller"));
+					UE_LOG(LogWeapons, Error, TEXT("Can't linetrace, no owning Controller or Character"));
 					return;
 				}
 				FVector CameraLocation;
@@ -120,7 +120,8 @@ void AWeapon::Tick(float DeltaTime)
 							{
 								TriggerMetaSound(FName("Hit"));
 							}
-
+							// Health regen on damage, can improve
+							OwningCharacter->CurrHealth = FMath::Min(OwningCharacter->MaxHealth, OwningCharacter->CurrHealth + (ResultantDamage / 5.0f));
 							UGameplayStatics::ApplyPointDamage(HitActor, ResultantDamage, HitResult.ImpactPoint, HitResult, OwningController, OwningCharacter, nullptr);
 						}
 					}

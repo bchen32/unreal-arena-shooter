@@ -50,7 +50,7 @@ AArenaShooterCharacter::AArenaShooterCharacter()
 
 	MaxSlowMo = CurSlowMo = 90.0f;
 
-	MaxHealth = CurrHealth = 10.0f;
+	MaxHealth = CurrHealth = 100.0f;
 	
 	ASGameInstance = nullptr;
 }	
