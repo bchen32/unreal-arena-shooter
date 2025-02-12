@@ -47,7 +47,7 @@ void AArenaShooterPlayerController::SetupInputComponent()
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Completed, this, &AArenaShooterPlayerController::TogglePauseMenu);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AArenaShooterPlayerController::TogglePauseMenu);
 	}
 }
 
