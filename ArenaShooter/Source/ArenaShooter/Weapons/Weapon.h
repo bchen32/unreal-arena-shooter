@@ -24,6 +24,9 @@ protected:
 
 	// Sound effects
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
+	UAudioComponent* AudioComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Audio)
 	USoundBase* MetaSound; // handles all sfx logic
 
 	// Animations
@@ -52,16 +55,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Gameplay)
 	bool bIsSemiAuto;
 
+	UPROPERTY()
+	AArenaShooterCharacter* OwningCharacter;
+
+	UPROPERTY()
+	AArenaShooterPlayerController* OwningController;
+
 	int32 CurrAmmo;
 	float TimeSinceLastShot;
 	bool bIsShooting;
 	bool bIsReloading;
 	bool bIsActive;
-	UAudioComponent* AudioComponent;
 	FTimerHandle EquipTimerHandle;
 	FTimerHandle ReloadTimerHandle;
-	AArenaShooterCharacter* OwningCharacter;
-	AArenaShooterPlayerController* OwningController;
 
 public:
 	AWeapon();
@@ -96,6 +102,10 @@ protected:
 	virtual void CompleteReload();
 
 	virtual void PlayAnim(UAnimMontage* Anim);
+
+	virtual void SetFloatMetaSound(const FName& ParamName, float NewVal);
+
+	virtual void TriggerMetaSound(const FName& TriggerName);
 
 	virtual void UpdateHUD();
 

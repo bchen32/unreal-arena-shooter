@@ -41,9 +41,10 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	if (MetaSound)
+	if (IsValid(MetaSound) && IsValid(AudioComponent))
 	{
 		AudioComponent->SetSound(MetaSound);
+		AudioComponent->Play();
 	}
 	CurrAmmo = MaxAmmo;
 	TimeSinceLastShot = 0.0f;
@@ -57,10 +58,7 @@ void AWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(EquipTimerHandle);
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
-	if (AudioComponent)
-	{
-		AudioComponent->SetTriggerParameter(FName("Stop"));
-	}
+	TriggerMetaSound(FName("Stop"));
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -83,9 +81,9 @@ void AWeapon::Tick(float DeltaTime)
 				TimeSinceLastShot = 0.0f;
 				--CurrAmmo;
 				// Line trace
-				if (!OwningController)
+				if (!IsValid(OwningController))
 				{
-					UE_LOG(LogWeapons, Error, TEXT("Can't linetrace, no owning controller"));
+					UE_LOG(LogWeapons, Error, TEXT("Can't linetrace, no owning Controller"));
 					return;
 				}
 				FVector CameraLocation;
@@ -103,25 +101,24 @@ void AWeapon::Tick(float DeltaTime)
 				if (bHit)
 				{
 					AActor* HitActor = HitResult.GetActor();
-					if (HitActor)
+					if (IsValid(HitActor))
 					{
-						if (AEnemy* Enemy = Cast<AEnemy>(HitActor))
+						AEnemy* Enemy = Cast<AEnemy>(HitActor);
+						if (IsValid(Enemy))
 						{
 							Enemy->OnDeath.BindUObject(this, &AWeapon::OnKill);
 
 							// Apply critical damage modifiers
 							float ResultantDamage = Damage;
-							if (UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent()))
+							UWeakSpotComponent* WeakSpot = Cast<UWeakSpotComponent>(HitResult.GetComponent());
+							if (IsValid(WeakSpot))
 							{
 								ResultantDamage = WeakSpot->ApplyDamageModifier(Damage);
-								if (AudioComponent)
-								{
-									AudioComponent->SetTriggerParameter(FName("Critical"));
-								}
+								TriggerMetaSound(FName("Critical"));
 							}
 							else
 							{
-								AudioComponent->SetTriggerParameter(FName("Hit"));
+								TriggerMetaSound(FName("Hit"));
 							}
 
 							UGameplayStatics::ApplyPointDamage(HitActor, ResultantDamage, HitResult.ImpactPoint, HitResult, OwningController, OwningCharacter, nullptr);
@@ -129,15 +126,9 @@ void AWeapon::Tick(float DeltaTime)
 					}
 					// Play impact vfx
 				}
-				if (ShootAnim)
-				{
-					PlayAnim(ShootAnim);
-				}
+				PlayAnim(ShootAnim);
 
-				if (AudioComponent)
-				{
-					AudioComponent->SetTriggerParameter(FName("Shoot"));
-				}
+				TriggerMetaSound(FName("Shoot"));
 
 				// Play muzzle flash
 
@@ -173,15 +164,9 @@ void AWeapon::StartReload()
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::CompleteReload, ReloadCooldown, false);
 		bIsReloading = true;
 
-		if (ReloadAnim)
-		{
-			PlayAnim(ReloadAnim);
-		}
+		PlayAnim(ReloadAnim);
 
-		if (AudioComponent)
-		{
-			AudioComponent->SetTriggerParameter(FName("Reload"));
-		}
+		TriggerMetaSound(FName("Reload"));
 	}
 }
 
@@ -189,35 +174,39 @@ void AWeapon::Enable()
 {
 	SetActorHiddenInGame(false);
 	GetWorld()->GetTimerManager().SetTimer(EquipTimerHandle, this, &AWeapon::CompleteEquip, EquipTime, false);
-	UpdateHUD();
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle); // equipping weapon resets reload
+	bIsReloading = false;
 	// Play pull out animation TODO
-
-	if (AudioComponent)
-	{
-		AudioComponent->Play(); // just activates metasound, doesn't trigger any sound
-		AudioComponent->SetTriggerParameter(FName("Equip"));
-	}
+	TriggerMetaSound(FName("Equip"));
+	UpdateHUD();
 }
 
 void AWeapon::Disable()
 {
 	SetActorHiddenInGame(true);
 	GetWorld()->GetTimerManager().ClearTimer(EquipTimerHandle);
+	if (GetWorld()->GetTimerManager().IsTimerActive(ReloadTimerHandle))
+	{
+		if (CurrAmmo == 0) // pocket reload if empty
+		{
+			GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::CompleteReload, ReloadCooldown, false);
+			bIsReloading = true;
+		}
+		else
+		{
+			GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+			bIsReloading = false;
+		}
+	}
 	bIsActive = false;
 	bIsShooting = false;
 	PrimaryActorTick.bCanEverTick = false;
-	if (AudioComponent && AudioComponent->IsPlaying())
-	{
-		AudioComponent->SetTriggerParameter(FName("Switch"));
-	}
+	TriggerMetaSound(FName("Switch"));
 }
 
 void AWeapon::OnKill()
 {
-	if (AudioComponent)
-	{
-		AudioComponent->SetTriggerParameter(FName("Kill"));
-	}
+	TriggerMetaSound(FName("Kill"));
 	CompleteReload();
 }
 
@@ -231,6 +220,10 @@ void AWeapon::CompleteEquip()
 {
 	bIsActive = true;
 	PrimaryActorTick.bCanEverTick = true;
+	if (CurrAmmo > 0)
+	{
+		TriggerMetaSound(FName("Idle"));
+	}
 }
 
 void AWeapon::CompleteReload()
@@ -239,29 +232,55 @@ void AWeapon::CompleteReload()
 	bIsReloading = false;
 	if (bIsActive)
 	{
+		TriggerMetaSound(FName("Idle"));
 		UpdateHUD();
 	}
 }
 
 void AWeapon::PlayAnim(UAnimMontage* Anim)
 {
-	if (!OwningCharacter)
+	if (!IsValid(OwningCharacter))
 	{
 		UE_LOG(LogWeapons, Error, TEXT("Can't play anim, no owning character"));
 		return;
 	}
 	UAnimInstance* AnimInstance = OwningCharacter->GetMesh1P()->GetAnimInstance();
-	if (AnimInstance)
+	if (!IsValid(AnimInstance))
+	{
+		UE_LOG(LogWeapons, Error, TEXT("Can't play anim, owning character no AnimInstance"));
+		return;
+	}
+	if (IsValid(Anim))
 	{
 		AnimInstance->Montage_Play(Anim, 1.0f);
 	}
 }
 
+void AWeapon::SetFloatMetaSound(const FName& ParamName, float NewVal)
+{
+	if (!IsValid(AudioComponent))
+	{
+		UE_LOG(LogWeapons, Error, TEXT("Can't set MetaSound param, invalid AudioComponent"));
+		return;
+	}
+	AudioComponent->SetFloatParameter(ParamName, NewVal);
+}
+
+void AWeapon::TriggerMetaSound(const FName& TriggerName)
+{
+	if (!IsValid(AudioComponent))
+	{
+		UE_LOG(LogWeapons, Error, TEXT("Can't play sound, invalid AudioComponent"));
+		return;
+	}
+	AudioComponent->SetTriggerParameter(TriggerName);
+}
+
 void AWeapon::UpdateHUD()
 {
-	if (!OwningController || !OwningController->HUD) // refactor HUD, should probably use a getter
+	if (!IsValid(OwningController) || !IsValid(OwningController->HUD)) // refactor HUD, should probably use a getter
 	{
-		UE_LOG(LogWeapons, Error, TEXT("Can't update HUD, no owning controller with HUD"));
+		UE_LOG(LogWeapons, Error, TEXT("Can't update HUD, no owning Controller with HUD"));
 		return;
 	}
 	OwningController->HUD->SetAmmo(CurrAmmo, MaxAmmo);

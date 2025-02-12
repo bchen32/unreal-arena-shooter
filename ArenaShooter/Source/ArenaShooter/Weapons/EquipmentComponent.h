@@ -12,7 +12,7 @@ class AWeapon;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEquipment, Log, All);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=("Equipment"), meta = (BlueprintSpawnableComponent))
 class ARENASHOOTER_API UEquipmentComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -47,10 +47,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Equipment)
 	TArray<TSubclassOf<AWeapon>> WeaponClasses;
 
+	UPROPERTY()
 	TArray<AWeapon*> Weapons;
-	int32 CurrWeaponIdx;
+
+	UPROPERTY()
 	AArenaShooterCharacter* OwningCharacter;
+
+	UPROPERTY()
 	APlayerController* OwningController;
+
+	int32 CurrWeaponIdx;
 
 public:
 	UEquipmentComponent();
