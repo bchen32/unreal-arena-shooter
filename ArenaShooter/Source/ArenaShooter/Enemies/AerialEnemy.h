@@ -16,7 +16,7 @@ class ARENASHOOTER_API AAerialEnemy : public AShooterEnemy
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCapsuleComponent* GroundComponent;
 public:
 	AAerialEnemy();
