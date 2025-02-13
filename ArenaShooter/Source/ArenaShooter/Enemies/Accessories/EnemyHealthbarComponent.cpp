@@ -2,6 +2,7 @@
 
 
 #include "Enemies/Accessories/EnemyHealthbarComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 void UEnemyHealthbarComponent::UpdateHealthbarProgress(float OldHealth, float NewHealth)
 {
@@ -23,6 +24,18 @@ UEnemyHealthbarComponent::UEnemyHealthbarComponent()
 
 	ProgressBar = nullptr;
 	EnemyOwner = nullptr;
+	Target = nullptr;
+}
+
+void UEnemyHealthbarComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (Target)
+	{
+		FRotator ToTarget = (Target->GetActorLocation() - GetOwner()->GetActorLocation()).GetSafeNormal().Rotation();
+		SetWorldRotation(ToTarget);
+	}
 }
 
 void UEnemyHealthbarComponent::BeginPlay()
@@ -31,6 +44,9 @@ void UEnemyHealthbarComponent::BeginPlay()
 	
 	// Bind the healthbar so it actually updates when the enemy owner changes health
 	BindToHealth();
+
+	// Get the player so we can always face the player
+	Target = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void UEnemyHealthbarComponent::BindToHealth()

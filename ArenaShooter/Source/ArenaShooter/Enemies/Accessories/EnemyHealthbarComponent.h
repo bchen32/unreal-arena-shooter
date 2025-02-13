@@ -25,6 +25,9 @@ protected:
 	UPROPERTY()
 	AEnemy* EnemyOwner;
 
+	UPROPERTY()
+	AActor* Target;
+
 	virtual void BeginPlay() override;
 
 	virtual void BindToHealth();
@@ -33,6 +36,8 @@ protected:
 	virtual void UpdateHealthbarProgress(float OldHealth, float NewHealth);
 public:
 	UEnemyHealthbarComponent();
+
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UProgressBar* GetHealthProgressBar();
 };
