@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemies/ShooterEnemy.h"
+#include "Components/CapsuleComponent.h"
 #include "AerialEnemy.generated.h"
 
 /**
@@ -13,4 +14,10 @@ UCLASS()
 class ARENASHOOTER_API AAerialEnemy : public AShooterEnemy
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(BlueprintReadWrite)
+	UCapsuleComponent* GroundComponent;
+public:
+	AAerialEnemy();
 };
